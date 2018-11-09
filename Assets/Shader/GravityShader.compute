@@ -1,0 +1,67 @@
+﻿#pragma kernel CalculateSpeed
+#pragma kernel CalculatePositions
+
+#define theta  0.1
+#define PI 3.141592
+
+struct Planet
+{
+    float2 speed;
+    float2 position;
+    float mass;
+    float radius;
+    int collided;
+    int alive;
+};
+
+RWStructuredBuffer<Planet> particles;
+
+float deltaT;
+float G;
+
+[numthreads(8, 8, 1)]
+void CalculateSpeed(uint3 id : SV_DispatchThreadID)
+{
+    int i = id.x;
+    int j = id.y;
+
+    if ((i != j)
+    && (particles[i].alive > 0)
+    && (particles[j].alive > 0))
+    {
+        // non normalized direction
+        float2 dirMag = particles[j].position - particles[i].position;
+
+        float distance = length(dirMag);
+
+        float a = G * particles[j].mass / ((pow(distance, 2) + 0.01));
+
+        float2 dir = normalize(dirMag);
+
+        float2 v = dir * a * deltaT;
+
+        particles[i].speed += v;
+
+        float r1 = particles[i].radius;
+        float r2 = particles[j].radius;
+        
+        if (distance < (r1 + r2))
+        {
+            if (particles[i].mass > particles[j].mass)
+            {
+                particles[i].collided = j;
+                particles[i].mass += particles[j].mass;
+                particles[j].alive = -1;
+                particles[i].speed = (particles[i].speed * particles[i].mass + particles[j].speed * particles[j].mass) / (particles[i].mass + particles[j].mass);
+                particles[i].radius = pow(particles[i].mass * 3.0 / (4.0 * PI), 0.3333333) * 0.05;
+            }
+        }
+    }
+}
+
+[numthreads(8, 1, 1)]
+void CalculatePositions(uint3 id : SV_DispatchThreadID)
+{
+    int i = id.x;
+    particles[i].position += particles[i].speed * deltaT;
+}
