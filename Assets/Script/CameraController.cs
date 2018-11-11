@@ -18,11 +18,38 @@ public class CameraController : MonoBehaviour
     void Update()
     {
         UpdateZoom();
-
         UpdatePosition();
     }
 
     private void UpdatePosition()
+    {
+        UpdatePositionFromKeys();
+        UpdatePositionFromMouse();
+        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, targetCameraPos, 0.4f);
+    }
+
+    private void UpdatePositionFromKeys()
+    {
+        var keyOffset = 5f;
+        if (Input.GetKey(KeyCode.LeftArrow))
+        {
+            targetCameraPos.x -= keyOffset;
+        }
+        if (Input.GetKey(KeyCode.RightArrow))
+        {
+            targetCameraPos.x += keyOffset;
+        }
+        if (Input.GetKey(KeyCode.UpArrow))
+        {
+            targetCameraPos.y += keyOffset;
+        }
+        if (Input.GetKey(KeyCode.DownArrow))
+        {
+            targetCameraPos.y -= keyOffset;
+        }
+    }
+
+    private void UpdatePositionFromMouse()
     {
         if (Input.GetMouseButtonDown((int)MouseButton.MiddleMouse))
         {
@@ -40,8 +67,6 @@ public class CameraController : MonoBehaviour
 
             lastMousePos = pos;
         }
-
-        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, targetCameraPos, 0.2f);
     }
 
     private void UpdateZoom()
