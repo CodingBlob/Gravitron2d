@@ -1,19 +1,15 @@
-﻿using UnityEngine;
+﻿using System.Linq;
+using UnityEngine;
 
 namespace Assets
 {
     public class VisualParticle : MonoBehaviour
     {
-        private SpriteRenderer spriteRenderer;
+        private Renderer[] renderes;
 
         private void Awake()
         {
-            spriteRenderer = GetComponent<SpriteRenderer>();
-        }
-
-        private void SetColor(Color color)
-        {
-            spriteRenderer.material.SetColor("_Color", color);
+            renderes = GetComponents<Renderer>();
         }
 
         public void UpdateParams(GravitySimulation.GravityParticle p)
@@ -26,8 +22,7 @@ namespace Assets
             if (p.alive == -1)
             {
                 p.alive = -2;
-                Destroy(GetComponent<TrailRenderer>());
-                GetComponent<Renderer>().enabled = false;
+                Destroy(gameObject);
             }
 
             var radius = p.radius;
@@ -40,6 +35,11 @@ namespace Assets
             var color = ct <= 1 ? Color.Lerp(Color.blue, Color.red, ct) : Color.Lerp(Color.red, Color.white, ct - 1);
 
             SetColor(color);
+        }
+
+        private void SetColor(Color color)
+        {
+            renderes.ToList().ForEach(r => r.material.SetColor("_Color", color));
         }
     }
 }

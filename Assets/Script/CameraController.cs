@@ -17,9 +17,18 @@ public class CameraController : MonoBehaviour
 
     void Update()
     {
-        zoomFactor -= Input.GetAxis("Mouse ScrollWheel") * 100f;
+        UpdateZoom();
 
-        Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, zoomFactor, 0.1f);
+        UpdatePosition();
+    }
+
+    private void UpdatePosition()
+    {
+        if (Input.GetMouseButtonDown((int)MouseButton.MiddleMouse))
+        {
+            var pos = Input.mousePosition;
+            lastMousePos = pos;
+        }
 
         if (Input.GetMouseButton((int)MouseButton.MiddleMouse))
         {
@@ -27,14 +36,17 @@ public class CameraController : MonoBehaviour
 
             var mouseDelta = (pos - lastMousePos) / 10f;
 
-            if (mouseDelta.magnitude < 10)
-            {
-                targetCameraPos -= mouseDelta; 
-            }
+            targetCameraPos -= mouseDelta;
 
             lastMousePos = pos;
         }
 
-        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, targetCameraPos, 0.1f);
+        Camera.main.transform.position = Vector3.Lerp(Camera.main.transform.position, targetCameraPos, 0.2f);
+    }
+
+    private void UpdateZoom()
+    {
+        zoomFactor = Mathf.Clamp(zoomFactor - Input.GetAxis("Mouse ScrollWheel") * 100f, 10, 100);
+        Camera.main.orthographicSize = Mathf.Lerp(Camera.main.orthographicSize, zoomFactor, 0.2f);
     }
 }

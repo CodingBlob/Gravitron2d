@@ -220,11 +220,11 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   VisualParticlePrefab: {fileID: 114559090465017748, guid: 702753f9de2ee1e4fa29ebd2988152cb,
     type: 2}
-  Gravity: 0.0001
+  Gravity: 0.0003
   StartSpeed: 1000
-  SpawnRadius: 1000
+  SpawnRadius: 500
   MaxMass: 2000
-  Count: 10000
+  Count: 5000
   GravityShader: {fileID: 7200000, guid: d3239bf5d464bf942a9e5b5c72af1f40, type: 3}
 --- !u!1 &366287483
 GameObject:

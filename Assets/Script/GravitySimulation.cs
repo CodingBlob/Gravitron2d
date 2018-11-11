@@ -33,7 +33,7 @@ public class GravitySimulation : MonoBehaviour
                 {
                     Destroy(visualParticle.gameObject);
                 }
-            } 
+            }
         }
 
         var result = new VisualParticle[particles.Length];
@@ -60,8 +60,8 @@ public class GravitySimulation : MonoBehaviour
             {
                 alive = 1,
                 collided = -1,
-                mass = MaxMass * (UnityEngine.Random.value + 0.5f),
-                speed = UnityEngine.Random.insideUnitSphere * StartSpeed / 10000f,
+                mass = MaxMass * Mathf.Pow(UnityEngine.Random.value + 0.5f, 1.5f),
+                speed = UnityEngine.Random.insideUnitSphere -new Vector3(0.5f, 0.5f, 0.5f) * StartSpeed / 1000f,
                 position = UnityEngine.Random.insideUnitSphere * SpawnRadius
             };
 
@@ -115,10 +115,21 @@ public class GravitySimulation : MonoBehaviour
             ResetSimulation();
             return;
         }
-
-        DispatchToGpu();
         UpdateVisualParticles();
+        UpdateInstances();
+        DispatchToGpu();
         gravityParticlesBuffer.GetData(particles);
+    }
+
+    private void UpdateInstances()
+    {
+        for (int i = 0;i<particles.Length;i++)
+        {
+            if (particles[i].alive == -1)
+            {
+                particles[i].alive = -2;
+            }
+        }
     }
 
     private void ResetSimulation()
